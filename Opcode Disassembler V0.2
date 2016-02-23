@@ -1,0 +1,158 @@
+*-----------------------------------------------------------
+* Title      : Opcode Disassembler
+* Written by : Hao-Han Chao 
+* Date       : 02/20/2016
+* Description: Move & Add
+*-----------------------------------------------------------
+       
+*****************************************
+*
+* Example of using a jump table to decode an instruction
+*
+****************************************
+* System equates
+stack       EQU     $A000
+data1       EQU     $1600             * INSTRUCTION MOVE.B D0,D3
+data2       EQU     $3600             * INSTRUCTION MOVE.W D0,D3
+data3       EQU     $2600             * INSTRUCTION MOVE.L D0,D3
+data4       EQU     $D600             * INSTRUCTION ADD.B D0,D3
+data5       EQU     $D640             * INSTRUCTION ADD.W D0,D3
+data6       EQU     $D680             * INSTRUCTION ADD.L D0,D3
+data7       EQU     $D138             * INSTRUCTION ADD.B D0,$4000
+data8       EQU     $D178             * INSTRUCTION ADD.W D0,$4000
+data9       EQU     $D1B8             * INSTRUCTION ADD.L D0,$4000
+shift       EQU     12                * Shift 12 bits
+
+* Program starts here
+            ORG     $400
+START:      
+            MOVE.W  $1000, D3
+            LEA     stack,SP        * Load the SP = A7 which is stack pointer                          
+            LEA     jmp_table,A0    * Index into the table
+            CLR.L   D0              * Zero it
+            MOVE.W  #data5,D0       * Put instruction into D0
+            MOVE.B  #shift,D1       * Put shift constant into D1
+            LSR.W   D1,D0           * Logical shift right 12 bits
+        
+            MULU    #6,D0           * Multiply D0 by 6
+                                    * Scale up 6 base on size of each jump entry
+            JSR     0(A0,D0)        * Jump indirect with index
+                                    * JSR stores the return location into the stack
+                                    * so the 68k can return back to the JSR, and continue
+        
+EA          MOVE.B  #9, D0
+            TRAP    #15             ; halt simulator
+        
+* Put variables and constants here
+CR          EQU     $0D
+LF          EQU     $0A
+MOVE_B      DC.B    'Hello, I am MOVE.B',CR,LF,0   
+MOVE_W      DC.B    'Hello, I am MOVE.W',CR,LF,0  
+MOVE_L      DC.B    'Hello, I am MOVE.L',CR,LF,0    
+ADD_B       DC.B    'Hello, I am ADD.B',CR,LF,0 
+ADD_W       DC.B    'Hello, I am ADD.W',CR,LF,0 
+ADD_L       DC.B    'Hello, I am ADD.L',CR,LF,0 
+TEST        DC.B    'Hello, I am Bit manipulation/MOVEP/Immediate',CR,LF,0
+
+add_jmp_tab JMP     j_add_b             * ADD jump table
+            JMP     j_add_w
+            JMP     j_add_l
+j_add_b
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     ADD_B,A1            * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+            
+j_add_w       
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     ADD_W,A1            * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+j_add_l         
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     ADD_L,A1            * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+            
+jmp_table   JMP     code0000
+            JMP     code0001
+            JMP     code0010
+            JMP     code0011
+            JMP     code0100
+            JMP     code0101
+            JMP     code0110
+            JMP     code0111
+            JMP     code1000
+            JMP     code1001
+            JMP     code1010
+            JMP     code1011
+            JMP     code1100
+            JMP     code1101
+            JMP     code1110
+            JMP     code1111
+code0000    STOP    #$2700
+code0001
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     MOVE_B,A1           * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+            
+code0010    
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     MOVE_L,A1           * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+
+code0011    
+            MOVEM.L     D0-D7/A0-A6, -(SP)
+            LEA     MOVE_W,A1           * loads string to A1
+            MOVE.B  #14,D0
+            TRAP    #15                 * display the message
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+            
+code0100    STOP    #$2700
+code0101    STOP    #$2700
+code0110    STOP    #$2700
+code0111    STOP    #$2700
+code1000    STOP    #$2700
+code1001    STOP    #$2700
+code1010    STOP    #$2700
+code1011    STOP    #$2700
+code1100    STOP    #$2700
+code1101    
+            MOVEM.L     D0-D7/A0-A6, -(SP)     
+            LEA     add_jmp_tab,A0    * Index into the table
+            CLR.L   D0                * Zero it
+            MOVE.W  #data6,D0         * Put instruction into D0
+            MOVE.B  #8,D1             * Put shift constant into D1
+            LSL.W   D1,D0             * Logical shift left 8 bits
+        
+            MOVE.B  #14,D1            * Put shift constant into D1
+            LSR.W   D1,D0             * Logical shift left 14 bits
+            
+            MULU    #6,D0             * Multiply D0 by 6
+                                      * Scale up 6 base on size of each jump entry
+            JSR     0(A0,D0)          * Jump indirect with index
+                                      * JSR stores the return location into the stack
+                                      * so the 68k can return back to the JSR, and continue
+            MOVEM.L     (SP)+, D0-D7/A0-A6
+            RTS
+code1110    STOP    #$2700
+code1111    STOP    #$2700
+            END    START        ; last line of source
+
+
+
+
+
