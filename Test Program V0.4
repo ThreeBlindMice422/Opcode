@@ -1,0 +1,116 @@
+*-----------------------------------------------------------
+* Title      : Test Program
+* Written by : Hao-Han Chao
+* Date       : Mar. 6, 2016
+* Description:
+*-----------------------------------------------------------
+                ORG    $7000
+START:  
+
+* MOVE instructions
+moves           MOVE.B D0, D3
+moves1          MOVE.W D0, D3
+moves2          MOVE.L D0, D3        
+
+* MOVEQ insturctions
+moveq           MOVEQ  #$34, D3
+
+* ADD instructions
+add             ADD.B D0, D3
+add1            ADD.W D0, D3       
+add2            ADD.L D0, D3
+add3            ADD.B D0, $4000
+add4            ADD.W D0, $4000       
+add5            ADD.L D0, $4000   
+
+* ADDA insturctions
+adda            ADDA.W A1,A3
+adda1           ADDA.L A1,A3
+
+* ADDI instructions
+addi1           ADDI.B #$12, D3
+addi2           ADDI.W #$1234, D3
+addi3           ADDI.L #$12345678, D3             
+
+* CMP instructions
+cmp             CMP.B  D0,D1
+cmp1            CMP.W  D0,D1
+cmp2            CMP.L  D0,D1
+
+* BCC instructions
+bcc             BCC    ABC
+bgt             BGT    ABC
+ble             BLE    ABC
+ABC
+
+* SUB instructions
+sub             SUB.B D0,D3
+sub1            SUB.W D0,D3
+sub2            SUB.L D0,D3
+sub3            SUB.B D0, $4000
+sub4            SUB.W D0, $4000
+sub5            SUB.L D0, $4000
+
+* DIVU instructions
+divu            DIVU   D0, D3
+
+* AND  insturctions 
+and             AND.B D0, D3
+and1            AND.W D0, D3       
+and2            AND.L D0, D3
+and3            AND.B D0, $4000
+and4            AND.W D0, $4000       
+and5            AND.L D0, $4000   
+
+* MULS  insturctions
+muls            MULS.W    D0, D3
+
+* ASR instructions
+asr             ASR.B   #8,D3
+asr1            ASR.W   #8,D3
+asr2            ASR.L   #8,D3
+asr3            ASR     $4000
+* LSL instructions
+lsl             LSL.B   #8,D3
+lsl1            LSL.W   #8,D3
+lsl2            LSL.L   #8,D3
+lsl3            LSL     $4000
+* ROL instructions
+rol             ROL.B   #8,D3
+rol1            ROL.W   #8,D3
+rol2            ROL.L   #8,D3
+rol3            ROL     $4000
+
+* CLR instructions
+clr             CLR.B   D0
+clr1            CLR.W   D0
+clr2            CLR.L   D0
+
+* RTS instructions
+rts             RTS
+
+* JSR instructions
+jsr             JSR ABC
+
+* NOP instructions
+nop             NOP
+
+* LEA instructions
+lea             LEA  $1000, A1
+
+* MOVEM instructions
+movem           MOVEM.W   D0, (A3)
+movem1          MOVEM.L   D0, (A3)
+                END    START     
+   
+
+
+
+
+
+
+
+
+
+
+
